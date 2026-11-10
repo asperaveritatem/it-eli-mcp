@@ -1120,8 +1120,21 @@ async def it_verify_citations(text: str, max_citations: int = 15) -> ToolResult:
 
 
 def main() -> None:
-    """Run the MCP server over stdio (default for Claude Code)."""
-    mcp.run()
+    """Run MCP over stdio locally or HTTP on Railway."""
+    transport = os.environ.get("MCP_TRANSPORT", "stdio").lower()
+
+    if transport in ("http", "streamable-http"):
+        mcp.run(
+            transport="http",
+            host="0.0.0.0",
+            port=int(os.environ.get("PORT", "8000")),
+        )
+    else:
+        mcp.run()
+
+
+if _name_ == "_main_":
+    main()
 
 
 if __name__ == "__main__":
